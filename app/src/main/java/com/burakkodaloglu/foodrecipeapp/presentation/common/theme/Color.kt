@@ -1,4 +1,4 @@
-package com.burakkodaloglu.foodrecipeapp.ui.theme
+package com.burakkodaloglu.foodrecipeapp.presentation.common.theme
 
 import androidx.compose.ui.graphics.Color
 
