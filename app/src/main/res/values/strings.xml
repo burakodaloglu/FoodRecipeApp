@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FoodRecipeApp</string>
+    <string name="desc_logo">Food Recipe App Logo</string>
 </resources>
