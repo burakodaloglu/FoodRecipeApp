@@ -47,11 +47,16 @@ fun SignInScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.recipes_logo),
+            contentDescription = "Logo",
+            modifier = Modifier.size(150.dp)
+        )
         Text(
             text = "Hello,",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 32.dp)
+            modifier = Modifier.padding(top = 8.dp)
         )
         Text(
             text = "Welcome Back!",
@@ -88,7 +93,7 @@ fun SignInScreen() {
                 .fillMaxWidth()
                 .height(52.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFA500),
+                containerColor = Color(0xFFF61353),
             ),
             shape = MaterialTheme.shapes.medium
         ) {
@@ -165,7 +170,7 @@ fun SignInScreen() {
             text = buildAnnotatedString {
                 append("Don't have an account?")
                 withStyle(style = SpanStyle(color = Color(0xFFFFA500))) {
-                    append("Sign Up")
+                    append(" Sign Up")
                 }
             },
             color = Color.Black,

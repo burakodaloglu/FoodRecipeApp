@@ -107,7 +107,7 @@ fun SignUpScreen() {
                 .fillMaxWidth()
                 .height(52.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFA500),
+                containerColor = Color(0xFFF61353),
             ),
             shape = MaterialTheme.shapes.medium
         ) {
