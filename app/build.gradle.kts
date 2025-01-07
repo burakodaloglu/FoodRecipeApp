@@ -80,7 +80,7 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.hilt.compiler)
     annotationProcessor(libs.androidx.hilt.hilt.compiler)
-
+    implementation(libs.hilt.navigation.compose)
     //Room
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)

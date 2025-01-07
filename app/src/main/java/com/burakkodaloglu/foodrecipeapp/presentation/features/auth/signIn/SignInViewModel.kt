@@ -1,12 +1,9 @@
-package com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signUp
+package com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signIn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.burakkodaloglu.foodrecipeapp.data.repository.AuthRepository
 import com.burakkodaloglu.foodrecipeapp.presentation.common.Resource
-import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signUp.SignUpContract.UiAction
-import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signUp.SignUpContract.UiEffect
-import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signUp.SignUpContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -17,9 +14,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signIn.SignInContract.UiState
+import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signIn.SignInContract.UiAction
+import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signIn.SignInContract.UiEffect
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor(
+class SignInViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
@@ -30,18 +30,16 @@ class SignUpViewModel @Inject constructor(
 
     fun onAction(uiAction: UiAction) {
         when (uiAction) {
-            is UiAction.SignUpClick -> signUp()
+            is UiAction.SignInClick -> signIn()
             is UiAction.ChangeEmail -> updateUiState { copy(email = uiAction.email) }
             is UiAction.ChangePassword -> updateUiState { copy(password = uiAction.password) }
-            is UiAction.ChangeName -> updateUiState { copy(name = uiAction.name) }
         }
     }
 
-    private fun signUp() = viewModelScope.launch {
-        when (val result = authRepository.signUp(uiState.value.email, uiState.value.password)) {
+    private fun signIn() = viewModelScope.launch {
+        when (val result = authRepository.signIn(uiState.value.email, uiState.value.password)) {
             is Resource.Success -> {
-                emitUiEffect(UiEffect.ShowToast("Your account has been created successfully."))
-                emitUiEffect(UiEffect.GoToSignIn)
+                emitUiEffect(UiEffect.GoToMainScreen)
             }
 
             is Resource.Error -> {
