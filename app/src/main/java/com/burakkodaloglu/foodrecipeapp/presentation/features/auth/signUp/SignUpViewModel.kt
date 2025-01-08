@@ -30,25 +30,67 @@ class SignUpViewModel @Inject constructor(
 
     fun onAction(uiAction: UiAction) {
         when (uiAction) {
-            is UiAction.SignUpClick -> signUp()
+            //is UiAction.SignUpClick -> signUp()
             is UiAction.ChangeEmail -> updateUiState { copy(email = uiAction.email) }
+            is UiAction.ChangeLastName -> updateUiState { copy(lastName = uiAction.lastName) }
             is UiAction.ChangePassword -> updateUiState { copy(password = uiAction.password) }
             is UiAction.ChangeName -> updateUiState { copy(name = uiAction.name) }
         }
     }
-
+/*
     private fun signUp() = viewModelScope.launch {
+        updateUiState { copy(isLoading = true) }
         when (val result = authRepository.signUp(uiState.value.email, uiState.value.password)) {
             is Resource.Success -> {
+                updateUiState { copy(isLoading = false) }
                 emitUiEffect(UiEffect.ShowToast("Your account has been created successfully."))
-                emitUiEffect(UiEffect.GoToSignIn)
+                emitUiEffect(UiEffect.GoToMainScreen)
             }
 
             is Resource.Error -> {
+                updateUiState { copy(isLoading = false) }
                 emitUiEffect(UiEffect.ShowToast(result.exception.message.orEmpty()))
             }
         }
     }
+
+ */
+
+    fun signUpWithName(
+        email: String,
+        password: String,
+        name: String,
+        lastName:String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            updateUiState { copy(isLoading = true) }
+            when (val signUpResult = authRepository.signUp(email, password)) {
+                is Resource.Success -> {
+                    updateUiState { copy(isLoading = false) }
+                    val userId = signUpResult.data
+                    when (val saveNameResult = authRepository.saveFullNameToFirebase(userId, name, lastName)) {
+                        is Resource.Success -> {
+                            updateUiState { copy(isLoading = false) }
+                            onSuccess()
+                        }
+
+                        is Resource.Error -> {
+                            updateUiState { copy(isLoading = false) }
+                            onError(saveNameResult.exception.message ?: "Failed to save name")
+                        }
+                    }
+                }
+
+                is Resource.Error ->{
+                    updateUiState { copy(isLoading = false) }
+                    onError(signUpResult.exception.message ?: "Sign-up failed")
+                }
+            }
+        }
+    }
+
 
     private fun updateUiState(block: UiState.() -> UiState) {
         _uiState.update(block)

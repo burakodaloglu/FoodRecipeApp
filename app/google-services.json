@@ -12,7 +12,20 @@
           "package_name": "com.burakkodaloglu.foodrecipeapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "897507522655-k6o9b83g663vfgtkm1fkmrfcrf9u82kv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burakkodaloglu.foodrecipeapp",
+            "certificate_hash": "e38c5d9e8662df85b7afdb32b83f3b7edbadec0c"
+          }
+        },
+        {
+          "client_id": "897507522655-fojq1at8crcl5tdgtkdnjfu6rf8fpcoa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD0WHc9-08DPdnYF7xcPH8-KC_SRUBEKD8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897507522655-fojq1at8crcl5tdgtkdnjfu6rf8fpcoa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

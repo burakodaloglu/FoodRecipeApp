@@ -64,6 +64,8 @@ dependencies {
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.play.services.auth)
     //Kotlin Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
@@ -72,7 +74,6 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     //Coil
     implementation(libs.coil.compose)
-
     //Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

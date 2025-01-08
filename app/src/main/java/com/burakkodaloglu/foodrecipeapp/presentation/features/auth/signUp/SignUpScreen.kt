@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -53,10 +55,10 @@ fun SignUpScreen(
     onAction: (SignUpContract.UiAction) -> Unit,
     onNavigateToMain: () -> Unit,
     onNavigateToSignIn: () -> Unit,
-    //onGoogleSignUp: () -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val viewModel: SignUpViewModel = hiltViewModel()
 
     LaunchedEffect(uiEffect, lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -65,7 +67,8 @@ fun SignUpScreen(
                     is SignUpContract.UiEffect.ShowToast -> {
                         Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                     }
-                    is SignUpContract.UiEffect.GoToSignIn -> {
+
+                    is SignUpContract.UiEffect.GoToMainScreen -> {
                         onNavigateToMain()
                     }
                 }
@@ -83,22 +86,38 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(16.dp))
         InputFieldsSection(
             name = uiState.name,
+            lastName = uiState.lastName,
             email = uiState.email,
             password = uiState.password,
-            //confirmPassword = uiState.confirmPassword,
             onNameChange = { onAction(SignUpContract.UiAction.ChangeName(it)) },
+            onLastNameChange = { onAction(SignUpContract.UiAction.ChangeLastName(it)) },
             onEmailChange = { onAction(SignUpContract.UiAction.ChangeEmail(it)) },
             onPasswordChange = { onAction(SignUpContract.UiAction.ChangePassword(it)) },
-            //onConfirmPasswordChange = { onAction(SignUpContract.UiAction.ChangeConfirmPassword(it)) }
         )
         Spacer(modifier = Modifier.height(32.dp))
-        SignUpButton(onClick = { onAction(SignUpContract.UiAction.SignUpClick) })
+        SignUpButton(
+            isLoading = uiState.isLoading,
+            onClick = {
+            viewModel.signUpWithName(
+                email = uiState.email,
+                password = uiState.password,
+                name = uiState.name,
+                lastName = uiState.lastName,
+                onSuccess = {
+                    onNavigateToMain()
+                },
+                onError = { errorMessage ->
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            )
+            //onAction(SignUpContract.UiAction.SignUpClick)
+        })
         Spacer(modifier = Modifier.height(16.dp))
         DividerWithText(text = "Or Sign Up With")
         Spacer(modifier = Modifier.height(16.dp))
-        GoogleSignUpButton(onClick = { }) // Google giriş aksiyonu bağlandı
+        GoogleSignUpButton(onClick = { })
         Spacer(modifier = Modifier.height(16.dp))
-        NavigateToLoginText(onNavigateToLogin = onNavigateToSignIn) // Girişe yönlendirme bağlandı
+        NavigateToLoginText(onNavigateToLogin = onNavigateToSignIn)
     }
 }
 
@@ -128,18 +147,25 @@ fun HeaderSection() {
 @Composable
 fun InputFieldsSection(
     name: String,
+    lastName: String,
     email: String,
     password: String,
-    //confirmPassword: String,
     onNameChange: (String) -> Unit,
+    onLastNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    //onConfirmPasswordChange: (String) -> Unit
+    onPasswordChange: (String) -> Unit
 ) {
     OutlinedTextField(
         value = name,
         onValueChange = onNameChange,
         label = { Text("Name") },
+        modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    OutlinedTextField(
+        value = lastName,
+        onValueChange = onLastNameChange,
+        label = { Text("Last Name") },
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(modifier = Modifier.height(16.dp))
@@ -159,31 +185,30 @@ fun InputFieldsSection(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         modifier = Modifier.fillMaxWidth()
     )
-    Spacer(modifier = Modifier.height(16.dp))
-    OutlinedTextField(
-        value = "",
-        onValueChange = {  },
-        label = { Text("Confirm Password") },
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        modifier = Modifier.fillMaxWidth()
-    )
 }
 
-
-
 @Composable
-fun SignUpButton(onClick: () -> Unit) {
+fun SignUpButton(isLoading: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF61353))
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF61353)),
+        enabled = !isLoading
     ) {
-        Text(text = "Sign Up", fontSize = 16.sp, color = Color.White)
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = Color.White,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(text = "Sign Up", fontSize = 16.sp, color = Color.White)
+        }
     }
 }
+
 
 
 @Composable

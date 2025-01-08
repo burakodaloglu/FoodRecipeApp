@@ -29,7 +29,7 @@ sealed class NavRoute(val route: String) {
 fun NavGraph(navController: NavHostController, paddingValues: PaddingValues) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.Splash.route, // Sabit kullanımı
+        startDestination = NavRoute.Splash.route,
         modifier = Modifier.padding(paddingValues = paddingValues)
     ) {
 
@@ -53,7 +53,6 @@ fun NavGraph(navController: NavHostController, paddingValues: PaddingValues) {
             )
         }
 
-        // Sign-Up Screen
         composable(NavRoute.SignUp.route) {
             val viewModel: SignUpViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,7 +63,7 @@ fun NavGraph(navController: NavHostController, paddingValues: PaddingValues) {
                 uiEffect = uiEffect,
                 onAction = viewModel::onAction,
                 onNavigateToMain = {
-                    navController.navigate(NavRoute.SignIn.route) {
+                    navController.navigate(NavRoute.Home.route) {
                         popUpTo(NavRoute.SignUp.route) { inclusive = true }
                     }
                 },

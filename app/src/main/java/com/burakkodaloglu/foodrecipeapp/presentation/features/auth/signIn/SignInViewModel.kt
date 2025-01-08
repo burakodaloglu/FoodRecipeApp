@@ -37,13 +37,25 @@ class SignInViewModel @Inject constructor(
     }
 
     private fun signIn() = viewModelScope.launch {
+        updateUiState { copy(isLoading = true) }
         when (val result = authRepository.signIn(uiState.value.email, uiState.value.password)) {
             is Resource.Success -> {
+                updateUiState { copy(isLoading = false) }
                 emitUiEffect(UiEffect.GoToMainScreen)
             }
 
             is Resource.Error -> {
+                updateUiState { copy(isLoading = false) }
                 emitUiEffect(UiEffect.ShowToast(result.exception.message.orEmpty()))
+            }
+        }
+    }
+
+    fun fetchUserName(userId: String, onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            when (val result = authRepository.getFullNameFromFirebase(userId)) {
+                is Resource.Success -> onResult(result.data)
+                is Resource.Error -> onResult("User")
             }
         }
     }

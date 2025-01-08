@@ -16,12 +16,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,10 +43,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.burakkodaloglu.foodrecipeapp.R
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -55,6 +62,8 @@ fun SignInScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val viewModel: SignInViewModel = hiltViewModel()
+    var userName by remember { mutableStateOf("User") }
 
     LaunchedEffect(uiEffect, lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -70,14 +79,22 @@ fun SignInScreen(
             }
         }
     }
-
+    LaunchedEffect(Unit) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: ""
+        if (userId.isNotEmpty()) {
+            viewModel.fetchUserName(userId) { fetchedName ->
+                userName = fetchedName
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        HeaderSection()
+        HeaderSection(userName)
         Spacer(modifier = Modifier.height(16.dp))
         InputFieldsSection(
             email = uiState.email,
@@ -86,7 +103,10 @@ fun SignInScreen(
             onPasswordChange = { onAction(SignInContract.UiAction.ChangePassword(it)) }
         )
         Spacer(modifier = Modifier.height(32.dp))
-        SignInButton(onClick = { onAction(SignInContract.UiAction.SignInClick) })
+        SignInButton(
+            isLoading = uiState.isLoading,
+            onClick = {
+            onAction(SignInContract.UiAction.SignInClick) })
         Spacer(modifier = Modifier.height(16.dp))
         DividerWithText(text = "Or Sign In With")
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,10 +117,10 @@ fun SignInScreen(
 }
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(userName: String) {
     Column(horizontalAlignment = Alignment.Start) {
         Text(
-            text = "Welcome Back!",
+            text = "Welcome $userName!",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold
         )
@@ -139,15 +159,24 @@ fun InputFieldsSection(
 }
 
 @Composable
-fun SignInButton(onClick: () -> Unit) {
+fun SignInButton(isLoading: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF61353))
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF61353)),
+        enabled = !isLoading
     ) {
-        Text(text = "Sign In", fontSize = 16.sp, color = Color.White)
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = Color.White,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(text = "Sign In", fontSize = 16.sp, color = Color.White)
+        }
     }
 }
 
