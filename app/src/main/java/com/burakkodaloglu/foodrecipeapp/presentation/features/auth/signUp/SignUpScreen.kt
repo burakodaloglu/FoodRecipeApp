@@ -67,7 +67,6 @@ fun SignUpScreen(
                     is SignUpContract.UiEffect.ShowToast -> {
                         Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                     }
-
                     is SignUpContract.UiEffect.GoToMainScreen -> {
                         onNavigateToMain()
                     }

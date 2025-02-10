@@ -25,6 +25,7 @@ okhttp = "4.12.0"
 ksp="2.0.21-1.0.27"
 googleServices="4.4.2"
 workRuntime = "2.10.0"
+playServicesFido = "20.0.1"
 
 
 [libraries]
@@ -90,6 +91,7 @@ compose-navigation = { group = "androidx.navigation", name = "navigation-compose
 # OkHttp
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+play-services-fido = { group = "com.google.android.gms", name = "play-services-fido", version.ref = "playServicesFido" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
