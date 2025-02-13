@@ -39,14 +39,14 @@ class SignInViewModel @Inject constructor(
     private fun signIn() = viewModelScope.launch {
         updateUiState { copy(isLoading = true) }
         when (val result = authRepository.signIn(uiState.value.email, uiState.value.password)) {
+            is Resource.Loading->updateUiState { copy(isLoading = true) }
             is Resource.Success -> {
                 updateUiState { copy(isLoading = false) }
                 emitUiEffect(UiEffect.GoToMainScreen)
             }
-
             is Resource.Error -> {
                 updateUiState { copy(isLoading = false) }
-                emitUiEffect(UiEffect.ShowToast(result.exception.message.orEmpty()))
+                emitUiEffect(UiEffect.ShowToast(result.message.orEmpty()))
             }
         }
     }
@@ -54,7 +54,8 @@ class SignInViewModel @Inject constructor(
     fun fetchUserName(userId: String, onResult: (String) -> Unit) {
         viewModelScope.launch {
             when (val result = authRepository.getFullNameFromFirebase(userId)) {
-                is Resource.Success -> onResult(result.data)
+                is Resource.Loading->updateUiState { copy(isLoading = true) }
+                is Resource.Success -> result.data?.let { onResult(it) }
                 is Resource.Error -> onResult("User")
             }
         }

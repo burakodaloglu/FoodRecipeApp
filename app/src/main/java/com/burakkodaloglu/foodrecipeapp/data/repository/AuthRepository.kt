@@ -18,7 +18,7 @@ class AuthRepository @Inject constructor(
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             Resource.Success(result.user!!.uid)
         } catch (e: Exception) {
-            Resource.Error(e)
+            Resource.Error(e.localizedMessage.orEmpty())
         }
     }
 
@@ -27,7 +27,7 @@ class AuthRepository @Inject constructor(
             val result = auth.signInWithEmailAndPassword(email, password).await()
             Resource.Success(result.user?.uid.orEmpty())
         } catch (e: Exception) {
-            Resource.Error(e)
+            Resource.Error(e.localizedMessage.orEmpty())
         }
     }
 
@@ -40,7 +40,7 @@ class AuthRepository @Inject constructor(
             firestore.collection("users").document(userId).set(userMap).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e)
+            Resource.Error(e.localizedMessage.orEmpty())
         }
     }
 
@@ -53,7 +53,7 @@ class AuthRepository @Inject constructor(
             val fullName = "$name $lastName".trim()
             Resource.Success(fullName)
         } catch (e: Exception) {
-            Resource.Error(e)
+            Resource.Error(e.localizedMessage.orEmpty())
         }
     }
 

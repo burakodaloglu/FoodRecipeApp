@@ -67,25 +67,26 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             updateUiState { copy(isLoading = true) }
             when (val signUpResult = authRepository.signUp(email, password)) {
+                is Resource.Loading->updateUiState { copy(isLoading = true) }
                 is Resource.Success -> {
                     updateUiState { copy(isLoading = false) }
                     val userId = signUpResult.data
-                    when (val saveNameResult = authRepository.saveFullNameToFirebase(userId, name, lastName)) {
+                    when (val saveNameResult = authRepository.saveFullNameToFirebase(userId!!, name, lastName)) {
+                        is Resource.Loading->updateUiState { copy(isLoading = true) }
                         is Resource.Success -> {
                             updateUiState { copy(isLoading = false) }
                             onSuccess()
                         }
-
                         is Resource.Error -> {
                             updateUiState { copy(isLoading = false) }
-                            onError(saveNameResult.exception.message ?: "Failed to save name")
+                            onError(saveNameResult.message ?: "Failed to save name")
                         }
                     }
                 }
 
                 is Resource.Error ->{
                     updateUiState { copy(isLoading = false) }
-                    onError(signUpResult.exception.message ?: "Sign-up failed")
+                    onError(signUpResult.message ?: "Sign-up failed")
                 }
             }
         }
