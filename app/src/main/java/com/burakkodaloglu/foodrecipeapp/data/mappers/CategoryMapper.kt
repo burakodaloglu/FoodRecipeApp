@@ -11,6 +11,7 @@ fun CategoryDto.toCategory(): Category {
         strCategoryThumb = strCategoryThumb ?: ""
     )
 }
+
 fun Category.toCategoryDto(): CategoryDto {
     return CategoryDto(
         idCategory = this.idCategory,

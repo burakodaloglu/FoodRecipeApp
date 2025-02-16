@@ -17,17 +17,19 @@ import com.burakkodaloglu.foodrecipeapp.domain.entities.Category
 @Composable
 fun CategoryItem(
     category: Category,
+    selectedCategory: String?,
     onClick: (String) -> Unit
 ) {
+    val isSelected = category.strCategory == selectedCategory
+
     Surface(
         modifier = Modifier
             .padding(6.dp)
             .size(width = 120.dp, height = 50.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick(category.idCategory) },
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp,
-        shadowElevation = 3.dp
+            .clickable { onClick(category.strCategory) },
+        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+        tonalElevation = if (isSelected) 6.dp else 3.dp
     ) {
         Text(
             text = category.strCategory,
@@ -38,3 +40,4 @@ fun CategoryItem(
         )
     }
 }
+

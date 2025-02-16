@@ -1,7 +1,6 @@
 package com.burakkodaloglu.foodrecipeapp.presentation.features.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,47 +47,58 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.burakkodaloglu.foodrecipeapp.domain.entities.Category
+import com.burakkodaloglu.foodrecipeapp.domain.entities.Meal
 import com.burakkodaloglu.foodrecipeapp.presentation.features.home.categories.CategoryItem
-import com.burakkodaloglu.foodrecipeapp.presentation.features.home.categories.CategoryState
+import com.burakkodaloglu.foodrecipeapp.presentation.features.home.meal.MealListItem
 import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val state by viewModel.categoryState.collectAsState()
+    val categoryState by viewModel.categoryState.collectAsState()
+    val mealState by viewModel.mealListState.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         SearchButton()
         Spacer(modifier = Modifier.height(16.dp))
         FoodSlider()
         Spacer(modifier = Modifier.height(16.dp))
-        if (state.categoryList.isNotEmpty()) {
+
+        if (categoryState.categoryList.isNotEmpty()) {
             CategoryList(
-                categories = state.categoryList,
-                onCategoryClick = { categoryId ->
-                    println("Category ID: $categoryId")
+                categories = categoryState.categoryList,
+                selectedCategory = selectedCategory,
+                onCategoryClick = { category ->
+                    viewModel.getMealList(category)
                 }
             )
         }
 
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .size(48.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (mealState.isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (mealState.mealList.isNotEmpty()) {
+            MealList(meal = mealState.mealList)
+        } else {
+            Text(
+                text = "No food found in this category!",
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
 
-        // Hata Mesajı
-        state.errorMessage?.let {
-            //ErrorMessage(message = it)
+        categoryState.errorMessage?.let {
+            Text(text = it, color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
+
 @Composable
 fun CategoryList(
     categories: List<Category>,
+    selectedCategory: String?,
     onCategoryClick: (String) -> Unit
 ) {
     LazyRow(
@@ -99,11 +108,31 @@ fun CategoryList(
         items(categories) { category ->
             CategoryItem(
                 category = category,
+                selectedCategory = selectedCategory,
                 onClick = onCategoryClick
             )
         }
     }
 }
+
+
+@Composable
+fun MealList(
+    meal: List<Meal>,
+) {
+    LazyVerticalGrid(
+        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
+        modifier = Modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(meal) { meal ->
+            MealListItem(
+                meal = meal,
+            )
+        }
+    }
+}
+
 @Composable
 fun FoodSlider(
     modifier: Modifier = Modifier
