@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.burakkodaloglu.foodrecipeapp.domain.entities.Category
+import com.burakkodaloglu.foodrecipeapp.presentation.common.theme.Red80
 
 @Composable
 fun CategoryItem(
@@ -28,16 +29,15 @@ fun CategoryItem(
             .size(width = 120.dp, height = 50.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick(category.strCategory) },
-        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+        color = if (isSelected) Red80 else MaterialTheme.colorScheme.surface,
         tonalElevation = if (isSelected) 6.dp else 3.dp
     ) {
         Text(
             text = category.strCategory,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium
         )
     }
 }
-

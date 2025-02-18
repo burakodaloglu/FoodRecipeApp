@@ -12,9 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +47,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.burakkodaloglu.foodrecipeapp.domain.entities.Category
 import com.burakkodaloglu.foodrecipeapp.domain.entities.Meal
+import com.burakkodaloglu.foodrecipeapp.presentation.common.theme.Red80
 import com.burakkodaloglu.foodrecipeapp.presentation.features.home.categories.CategoryItem
 import com.burakkodaloglu.foodrecipeapp.presentation.features.home.meal.MealListItem
 import kotlinx.coroutines.delay
@@ -66,9 +66,9 @@ fun HomeScreen(
         FoodSlider()
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (categoryState.categoryList.isNotEmpty()) {
+        if (!categoryState.data.isNullOrEmpty()) {
             CategoryList(
-                categories = categoryState.categoryList,
+                categories = categoryState.data!!,
                 selectedCategory = selectedCategory,
                 onCategoryClick = { category ->
                     viewModel.getMealList(category)
@@ -76,12 +76,10 @@ fun HomeScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         if (mealState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        } else if (mealState.mealList.isNotEmpty()) {
-            MealList(meal = mealState.mealList)
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally), color = Red80)
+        } else if (!mealState.data.isNullOrEmpty()) {
+            MealList(meal = mealState.data!!)
         } else {
             Text(
                 text = "No food found in this category!",
@@ -115,15 +113,13 @@ fun CategoryList(
     }
 }
 
-
 @Composable
 fun MealList(
     meal: List<Meal>,
 ) {
-    LazyVerticalGrid(
-        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
+    LazyColumn(
         modifier = Modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(meal) { meal ->
             MealListItem(
@@ -176,7 +172,8 @@ fun FoodSlider(
                     CircularProgressIndicator(
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .size(48.dp)
+                            .size(48.dp),
+                        color = Red80
                     )
                 }
 
