@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material)
     implementation(libs.play.services.fido)
     implementation(libs.play.services.fido)
     testImplementation(libs.junit)
@@ -99,4 +100,5 @@ dependencies {
     //OkHttp
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
+
 }

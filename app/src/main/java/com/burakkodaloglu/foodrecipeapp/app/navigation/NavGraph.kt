@@ -14,46 +14,41 @@ import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signIn.SignIn
 import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signIn.SignInViewModel
 import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signUp.SignUpScreen
 import com.burakkodaloglu.foodrecipeapp.presentation.features.auth.signUp.SignUpViewModel
+import com.burakkodaloglu.foodrecipeapp.presentation.features.favorites.FavoritesScreen
 import com.burakkodaloglu.foodrecipeapp.presentation.features.home.HomeScreen
 import com.burakkodaloglu.foodrecipeapp.presentation.features.splash.SplashScreen
 import com.burakkodaloglu.foodrecipeapp.presentation.features.splash.SplashViewModel
 
-sealed class NavRoute(val route: String) {
-    object Splash : NavRoute("splash")
-    object SignUp : NavRoute("signUp")
-    object SignIn : NavRoute("signIn")
-    object Home : NavRoute("home")
-}
 
 @Composable
 fun NavGraph(navController: NavHostController, paddingValues: PaddingValues) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.Splash.route,
+        startDestination = Screens.Splash.route,
         modifier = Modifier.padding(paddingValues = paddingValues)
     ) {
 
         // Splash Screen
-        composable(NavRoute.Splash.route) {
+        composable(Screens.Splash.route) {
             val viewModel: SplashViewModel = hiltViewModel()
             val uiEffect = viewModel.uiEffect
 
             SplashScreen(
                 uiEffect = uiEffect,
                 onNavigateToLoginScreen = {
-                    navController.navigate(NavRoute.SignIn.route) {
-                        popUpTo(NavRoute.Splash.route) { inclusive = true }
+                    navController.navigate(Screens.SignIn.route) {
+                        popUpTo(Screens.Splash.route) { inclusive = true }
                     }
                 },
                 onNavigateToMainScreen = {
-                    navController.navigate(NavRoute.Home.route) {
-                        popUpTo(NavRoute.Splash.route) { inclusive = true }
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(Screens.Splash.route) { inclusive = true }
                     }
                 },
             )
         }
 
-        composable(NavRoute.SignUp.route) {
+        composable(Screens.SignUp.route) {
             val viewModel: SignUpViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val uiEffect = viewModel.uiEffect
@@ -63,19 +58,19 @@ fun NavGraph(navController: NavHostController, paddingValues: PaddingValues) {
                 uiEffect = uiEffect,
                 onAction = viewModel::onAction,
                 onNavigateToMain = {
-                    navController.navigate(NavRoute.Home.route) {
-                        popUpTo(NavRoute.SignUp.route) { inclusive = true }
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(Screens.SignUp.route) { inclusive = true }
                     }
                 },
                 onNavigateToSignIn = {
-                    navController.navigate(NavRoute.SignIn.route) {
-                        popUpTo(NavRoute.SignUp.route) { inclusive = true }
+                    navController.navigate(Screens.SignIn.route) {
+                        popUpTo(Screens.SignUp.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(NavRoute.SignIn.route) {
+        composable(Screens.SignIn.route) {
             val viewModel: SignInViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val uiEffect = viewModel.uiEffect
@@ -84,21 +79,24 @@ fun NavGraph(navController: NavHostController, paddingValues: PaddingValues) {
                 uiEffect = uiEffect,
                 onAction = viewModel::onAction,
                 onNavigateToMain = {
-                    navController.navigate(NavRoute.Home.route) {
-                        popUpTo(NavRoute.SignIn.route) { inclusive = true }
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(Screens.SignIn.route) { inclusive = true }
                     }
                 },
                 onNavigateToSignUp = {
-                    navController.navigate(NavRoute.SignUp.route) {
-                        popUpTo(NavRoute.SignIn.route) { inclusive = true }
+                    navController.navigate(Screens.SignUp.route) {
+                        popUpTo(Screens.SignIn.route) { inclusive = true }
                     }
                 }
             )
         }
 
         // Home Screen
-        composable(NavRoute.Home.route) {
+        composable(Screens.Home.route) {
             HomeScreen()
+        }
+        composable(Screens.Favorites.route) {
+            FavoritesScreen()
         }
     }
 }
